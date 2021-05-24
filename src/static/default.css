@@ -1,0 +1,24 @@
+
+body {
+    background-color: #d2f3f7;
+}
+
+/* bootstrap overwrite */
+.btn-primary {
+    background-color: #247ba0;
+    border-color: #247ba0;
+    color: #e8f1f2;
+}
+
+.btn-primary:hover {
+    background-color: #1b98e0;
+    border-color: #1b98e0;
+    color: #e8f1f2;
+}
+
+.btn-primary:focus, .btn-primary:active {
+    background-color: #006494;
+    border-color: #006494;
+    box-shadow: none !important;
+    color: #e8f1f2;
+}
