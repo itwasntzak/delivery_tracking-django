@@ -266,6 +266,7 @@ def end_shift_button_modal(shift, request):
 
 
 def split_button_modal(shift, request):
+    split = None
     if Split.objects.filter(shift=shift).count() > 0:
         for split in Split.objects.filter(shift=shift):
             # split has been started
