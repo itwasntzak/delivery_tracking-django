@@ -15,7 +15,8 @@ def button_group(button_list, label):
     return bootstrap.btn_group(
         content='\n'.join(button_list),
         label=label,
-        extra_classes='w-100'
+        extra_classes='w-100',
+        vertical=True
     )
 
 
