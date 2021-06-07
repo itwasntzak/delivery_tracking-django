@@ -60,7 +60,7 @@ def container(content, fluid=False, extra_classes='', style=''):
     return html.div(content=content, classes=classes, style=style)
 
 
-def field(label, input_type, id, value='', step='', min='', max='',
+def field(input_type, id, label='', value='', step='', min='', max='',
           required=False):
 
     code = html.label(

@@ -1,5 +1,5 @@
 from django.apps import AppConfig
 
 
-class DeliveryTrackingConfig(AppConfig):
-    name = 'delivery_tracking'
+class ObjectsConfig(AppConfig):
+    name = 'objects'

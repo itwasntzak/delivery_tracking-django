@@ -1,73 +1,57 @@
 from datetime import datetime
 
-from django.middleware.csrf import get_token
-from django.http.response import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
-from django.views.decorators.csrf import ensure_csrf_cookie
 from objects.models import Delivery, ExtraStop, Shift, Order, Split, Tip
-from objects.forms import AddDeliveryForm, EditDeliveryForm, EditOrderForm, ExtraStopForm, OrderForm, ShiftForm, SplitForm, TipForm
+import objects.forms as forms
 
 import py_web_ui.bootstrap as bootstrap
-import ui.elements as elements
 import resources.values as values
+import ui.elements.buttons as buttons
+import ui.elements.fields as fields
+import ui.elements.forms as html_forms
+import ui.elements.layout as layout
+import ui.elements.composite as composite
 
 
 # menus/ui
 def delivery_menu(request):
+    # todo: need to fix this to work with all the new changes
+
     # todo: have delivery details diplay below buttons
     # todo: add a check that raises an error if an id isnt included in GET
     # todo: add a warning if a order hasnt been added but end delivery is pressed
 
-    delivery_pk = request.GET.get('delivery_id')
-    delivery = Delivery.objects.get(pk=delivery_pk)
+    delivery = Delivery.objects.get(pk=request.GET.get(values.delivery_id))
 
     # logo bar
-    body_html = elements.logo_bar()
+    body_html = [ composite.logo_bar() ]
     # title text
-    body_html +=\
-        elements.title_text('Delivery Menu:', 'What would you like to do?')
+    body_html.append(
+        composite.title_text('Delivery Menu:', 'What would you like to do?')
+    )
 
     # buttons
-    body_html += elements.three_button_row(
+    body_html.append(layout.three_button_row(
         # order button 
-        elements.add_order_button(),
+        composite.add_order_button_modal(delivery, request),
         # extra stop button
-        elements.extra_stop_button(delivery),
+        composite.add_extra_stop_button_modal(delivery, request),
         # end delivery
-        elements.end_delivery_button()
-    )
+        composite.end_delivery_button_modal(delivery, request)
+    ))
 
     # order buttons
-    body_html += bootstrap.row(
-        bootstrap.col(
-            elements.delivery_order_button_group(delivery, request)
-        ),
-        extra_classes='mx-5'
+    body_html.append(
+        composite.edit_orders_button_modal_group(delivery, request)
     )
-
-    # todo: figure out how to process form data
-    # add order modal
-    body_html += elements.add_order_modal(
-        delivery=delivery,
-        csrf_token=get_token(request)
+    # extra stops buttons
+    body_html.append(
+        composite.edit_extra_stops_button_modal_group(delivery, request)
     )
-    # add extra stop modal
-    body_html += elements.add_extra_stop_modal(
-        parent=delivery,
-        csrf_token=get_token(request)
-    )
-    # end delivery modeal
-    body_html += elements.end_delivery_modal(
-        delivery=delivery,
-        csrf_token=get_token(request)
-    )
-
-    # container
-    body_html = bootstrap.container(body_html, fluid=True)
 
     context = {
-        'body_html': body_html,
+        'body_html': bootstrap.container('\n'.join(body_html), fluid=True),
     }
 
     return render(request, 'index.html', context)
@@ -77,22 +61,26 @@ def main_menu(request):
     # todo: work on turn this menu into more of a dashboard
 
     # logo bar
-    body_html = elements.logo_bar()
+    body_html = [ composite.logo_bar() ]
     # title text
-    body_html += elements.title_text('Welcome!', 'What would you like to do?')
-    # buttons
-    body_html += elements.three_button_row(
-        # order button 
-        elements.shift_button(),
-        # extra stop button
-        elements.view_shifts_button(),
-        # end delivery
-        elements.view_statistics_button()
+    body_html.append(
+        composite.title_text('Welcome!', 'What would you like to do?')
     )
+    # buttons
+    body_html.append(layout.three_button_row(
+        # order button 
+        buttons.shift(),
+        # extra stop button
+        buttons.view_shifts(),
+        # end delivery
+        buttons.view_statistics()
+    ))
     # container
-    body_html = bootstrap.container(body_html, fluid=True)
+    context = {
+        'body_html': bootstrap.container('\n'.join(body_html), fluid=True)
+    }
 
-    return render(request, 'index.html', { 'body_html': body_html })
+    return render(request, 'index.html', context)
 
 
 def shift_menu(request):
@@ -101,94 +89,58 @@ def shift_menu(request):
     # todo: disable other ui buttons a split or extra stop is in progress
     # todo: add a check that raises an error if an id isnt included in GET
 
-    # get shift object
+    # get shift
     shift = Shift.objects.get(pk=request.GET.get(values.shift_id))
 
     # logo bar
-    body_html = elements.logo_bar()
+    body_html = [ composite.logo_bar() ]
     # title text
-    body_html += elements.title_text('Shift Menu:', 'What would you like to do?')
+    body_html.append(composite.title_text('Shift Menu:', 'What would you like to do?'))
 
+    # todo: need to add the modals for the control buttons
     # buttons
-    # top row buttons
-    body_html += elements.three_button_row(
+    # top control buttons
+    body_html.append(layout.three_button_row(
         # delivery button
-        elements.delivery_button(shift),
+        buttons.start_delivery(shift),
         # extra stop button
-        elements.extra_stop_button(shift),
+        composite.add_extra_stop_button_modal(shift, request),
         # carry out tip button
-        elements.carry_out_tip_button()
-    )
-    # bottom row buttons
-    body_html += elements.two_button_row(
+        composite.add_carry_out_tip_button_modal(shift, request)
+    ))
+    # bottom control buttons
+    body_html.append(layout.two_button_row(
         # split button
         # todo: add conditional so remove split button if split is completed
-        elements.split_button(shift),
+        composite.split_button_modal(shift, request),
         # end shift button
-        elements.end_shift_button(),
-    )
+        composite.end_shift_button_modal(shift, request)
+    ))
 
-    # todo: add button groups conditionaly if there are any of those objects
-    # deliveries buttons
-    body_html += bootstrap.row(
-        bootstrap.col(
-            content=elements.delivery_button_group(
-                shift=shift,
-                request=request
-            ),
-            size=12
-        ),
-        extra_classes='mx-5 my-5'
+    # todo: trying to skip having a row and col for the layout, might brake
+    # edit deliveries group
+    body_html.append(
+        composite.edit_deliveries_button_modal_group(shift, request)
     )
-    # order buttons
-    body_html += bootstrap.row(
-        bootstrap.col(
-            content=elements.shift_order_button_group(
-                shift=shift,
-                request=request
-            ),
-            size=12
-        ),
-        extra_classes='mx-5 my-5'
+    # edit carry out tips group
+    body_html.append(
+        composite.edit_carry_out_tips_button_modal_group(shift, request)
     )
-    # extra stops buttons
-    body_html += bootstrap.row(
-        bootstrap.col(
-            content=elements.extra_stop_button_group(
-                parent=shift,
-                request=request
-            ),
-            size=12
-        ),
-        extra_classes='mx-5 my-5'
+    # edit orders group
+    body_html.append(composite.edit_orders_button_modal_group(shift, request))
+    # edit extra stops group
+    body_html.append(
+        composite.edit_extra_stops_button_modal_group(shift, request)
     )
-
-    # modals
-    # add carry out tip modal
-    body_html += elements.add_carry_out_tip_modal(
-        shift=shift,
-        csrf_token=get_token(request)
-    )
-    # add extra stop modal
-    body_html += elements.add_extra_stop_modal(
-        parent=shift,
-        csrf_token=get_token(request)
-    )
-    # end shift modal
-    body_html += elements.end_shift_modal(
-        shift=shift,
-        csrf_token=get_token(request)
-    )
-    # end split modal
-    body_html += elements.end_split_modal(
-        shift=shift,
-        csrf_token=get_token(request)
-    )
+    # edit split group
+    body_html.append(composite.edit_split_button_modal_group(shift, request))
 
     # container
-    body_html = bootstrap.container(body_html, fluid=True)
+    context = {
+        'body_html': bootstrap.container('\n'.join(body_html), fluid=True)
+    }
 
-    return render(request, 'index.html', { 'body_html': body_html })
+    return render(request, 'index.html', context)
 
 
 # functional/ux
@@ -196,15 +148,14 @@ def add_carry_out_tip(request):
     # todo: add a check that raises an error if an id isnt included in GET
 
     if request.method == 'POST':
-        shift_id = request.GET.get(values.shift_id)
-        shift = Shift.objects.get(pk=shift_id)
+        shift = Shift.objects.get(pk=request.GET.get(values.shift_id))
 
-        form = TipForm(request.POST)
+        form = forms.TipForm(request.POST)
         if form.is_valid():
             tip = Tip.objects.create(
                 shift=shift,
-                card=request.POST.get('card'),
-                cash=request.POST.get('cash')
+                card=request.POST.get(values.card_field_id),
+                cash=request.POST.get(values.cash_field_id)
             )
         else:
             print(form.errors)
@@ -227,15 +178,15 @@ def add_order(request):
         delivery_id = request.GET.get(values.delivery_id)
         delivery = Delivery.objects.get(pk=delivery_id)
 
-        order_form = OrderForm(request.POST)
-        tip_form = TipForm(request.POST)
+        order_form = forms.OrderForm(request.POST)
+        tip_form = forms.TipForm(request.POST)
 
         if order_form.is_valid():
             order = Order.objects.create(
                 delivery=delivery,
                 end_time=now.time(),
-                daily_id=request.POST.get('daily_id'),
-                distance=request.POST.get('distance')
+                daily_id=request.POST.get(values.daily_id_field_id),
+                distance=request.POST.get(values.distance_field_id)
             )
         else:
             print(order_form.errors)
@@ -243,8 +194,8 @@ def add_order(request):
         if tip_form.is_valid():
             tip = Tip.objects.create(
                 order=order,
-                card=request.POST.get('card'),
-                cash=request.POST.get('cash')
+                card=request.POST.get(values.card_field_id),
+                cash=request.POST.get(values.cash_field_id)
             )
         else:
             print(tip_form.errors)
@@ -262,25 +213,25 @@ def add_extra_stop(request):
     now = datetime.now()
 
     if request.method == 'POST':
-        location = request.POST.get('location')
-        reason = request.POST.get('reason')
-        distance = request.POST.get('distance')
+        location = request.POST.get(values.location_field_id)
+        reason = request.POST.get(values.reason_field_id)
+        distance = request.POST.get(values.distance_field_id)
+        note = request.POST.get(values.note_field_id)
 
         # shift
         if values.shift_id in request.GET:
-            print('\n\shift\n\n')
-
             shift = Shift.objects.get(pk=request.GET.get(values.shift_id))
 
 
             for extra_stop in ExtraStop.objects.filter(shift=shift):
                 # extra stop in progress
                 if extra_stop.end_time is None:
-                    form = ExtraStopForm(request.POST)
+                    form = forms.ExtraStopForm(request.POST)
 
                     if form.is_valid():
                         # todo: this currently doesnt work
-                        extra_stop.start_time = request.POST.get('start_time')
+                        extra_stop.start_time =\
+                            request.POST.get(values.start_time_field_id)
                         extra_stop.end_time = now.time()
                         extra_stop.location = location
                         extra_stop.reason = reason
@@ -303,7 +254,7 @@ def add_extra_stop(request):
             delivery_id = request.GET.get(values.delivery_id)
             delivery = Delivery.objects.get(pk=delivery_id)
 
-            form = ExtraStopForm(request.POST)
+            form = forms.ExtraStopForm(request.POST)
             form.end_time = now.time()
 
             if form.is_valid():
@@ -324,6 +275,28 @@ def add_extra_stop(request):
             ))
 
 
+def edit_carry_out_tip(request):
+    # todo: add a check that raises an error if an id isnt included in GET
+
+    if request.method == 'POST':
+        form = forms.TipForm(request.POST)
+        if form.is_valid():
+            tip = Tip.objects.get(pk=request.GET.get(values.tip_id))
+            tip.card = request.POST.get(values.card_field_id)
+            tip.cash = request.POST.get(values.cash_field_id)
+            tip.save()
+        else:
+            print(form.errors)
+
+        return redirect(
+            values.base_id_url.format(
+                reverse(values.shift_menu_view),
+                values.shift_id,
+                tip.shift.pk
+            )
+        )
+
+
 def edit_delivery(request):
     # todo: add a check that raises an error if an id isnt included in GET
     # todo: add a delete button incase the user want to delete an delivery
@@ -331,14 +304,15 @@ def edit_delivery(request):
 
     if request.method == 'POST':
         delivery_id = request.GET.get(values.delivery_id)
-        form = EditDeliveryForm(request.POST)
+        form = forms.EditDeliveryForm(request.POST)
 
         if form.is_valid():
             delivery = Delivery.objects.get(pk=delivery_id)
-            delivery.start_time = request.POST.get('start_time')
-            delivery.end_time = request.POST.get('end_time')
-            delivery.distance = request.POST.get('distance')
-            delivery.average_speed = request.POST.get('average_speed')
+            delivery.start_time = request.POST.get(values.start_time_field_id)
+            delivery.end_time = request.POST.get(values.end_time_field_id)
+            delivery.distance = request.POST.get(values.distance_field_id)
+            delivery.average_speed =\
+                request.POST.get(values.average_speed_field_id)
             delivery.save()
 
             delivery.shift.daily_delivery_id += 1
@@ -359,51 +333,60 @@ def edit_extra_stop(request):
     # todo: add a check that raises an error if an id isnt included in GET
 
     if request.method == 'POST':
-        extra_stop =\
-            ExtraStop.objects.get(pk=request.GET.get(values.extra_stop_id))
-        end_time = request.POST.get('end_time')
-        location = request.POST.get('location')
-        reason = request.POST.get('reason')
-        distance = request.POST.get('distance')
+        extra_stop = ExtraStop.objects.get(
+            pk=request.GET.get(values.extra_stop_id)
+        )
+        end_time = request.POST.get(values.end_time_field_id)
+        location = request.POST.get(values.location_field_id)
+        reason = request.POST.get(values.reason_field_id)
+        distance = request.POST.get(values.distance_field_id)
 
-        # shift
-        if extra_stop.shift is not None:
-            start_time = request.POST.get('start_time')
-
-            form = ExtraStopForm(request.POST)
-            if form.is_valid():
+        form = forms.ExtraStopForm(request.POST)
+        if form.is_valid():
+            # shift
+            if extra_stop.shift is not None:
+                start_time = request.POST.get(values.start_time_field_id)
                 extra_stop.start_time = start_time
                 extra_stop.end_time = end_time
                 extra_stop.location = location
                 extra_stop.reason = reason
                 extra_stop.distance = distance
                 extra_stop.save()
-            else:
-                print(form.errors)
 
-            return redirect(values.base_id_url.format(
-                reverse(values.shift_menu_view),
-                values.shift_id,
-                extra_stop.shift.id
-            ))
+                return redirect(values.base_id_url.format(
+                    reverse(values.shift_menu_view),
+                    values.shift_id,
+                    extra_stop.shift.id
+                    )
+                )
 
-        # delivery
-        elif extra_stop.delivery is not None:
-            form = ExtraStopForm(request.POST)
-            if form.is_valid():
-                extra_stop.end_time=end_time,
-                extra_stop.location=location,
-                extra_stop.reason=reason,
-                extra_stop.distance=distance,
+            # delivery
+            elif extra_stop.delivery is not None:
+                extra_stop.end_time=end_time
+                extra_stop.location=location
+                extra_stop.reason=reason
+                extra_stop.distance=distance
                 extra_stop.save()
-            else:
-                print(form.errors)
 
+        else:
+            print(form.errors)
+
+
+        menu = request.POST.get(values.sending_menu_field_id)
+        if menu == 'd':
             return redirect(values.base_id_url.format(
                 reverse(values.delivery_menu_view),
                 values.delivery_id,
                 extra_stop.delivery.pk
-            ))
+                )
+            )
+        elif menu == 's':
+            return redirect(values.base_id_url.format(
+                reverse(values.shift_menu_view),
+                values.shift_id,
+                extra_stop.delivery.shift.pk
+                )
+            )
 
 
 def edit_order(request):
@@ -411,23 +394,23 @@ def edit_order(request):
     # todo: add a delete button incase the user want to delete an order
 
     if request.method == 'POST':
-        order_form = EditOrderForm(request.POST)
-        tip_form = TipForm(request.POST)
+        order_form = forms.EditOrderForm(request.POST)
+        tip_form = forms.TipForm(request.POST)
 
 
         if order_form.is_valid():
             order = Order.objects.get(pk=request.GET.get(values.order_id))
             print(order.daily_id)
-            order.daily_id = request.POST.get('daily_id')
-            order.end_time = request.POST.get('end_time')
-            order.distance = request.POST.get('distance')
+            order.daily_id = request.POST.get(values.daily_id_field_id)
+            order.end_time = request.POST.get(values.end_time_field_id)
+            order.distance = request.POST.get(values.distance_field_id)
             order.save()
             print(order.daily_id)
 
             if tip_form.is_valid():
                 tip = Tip.objects.get(order=order)
-                tip.card = request.POST.get('card')
-                tip.cash = request.POST.get('cash')
+                tip.card = request.POST.get(values.card_field_id)
+                tip.cash = request.POST.get(values.cash_field_id)
                 tip.save()
 
             else:
@@ -436,7 +419,7 @@ def edit_order(request):
             print(order_form.errors)
 
         
-        sending_menu = request.POST.get('menu')
+        sending_menu = request.POST.get(values.sending_menu_field_id)
         if sending_menu == 's':
             return redirect(
                 values.base_id_url.format(
@@ -456,6 +439,28 @@ def edit_order(request):
             )
 
 
+def edit_split(request):
+    split = Split.objects.get(pk=request.GET.get(values.split_id))
+
+    form = forms.EditSplitForm(request.POST)
+    if form.is_valid():
+        split.start_time = request.POST.get(values.start_time_field_id)
+        split.end_time = request.POST.get(values.end_time_field_id)
+        split.distance = request.POST.get(values.distance_field_id)
+        split.note = request.POST.get(values.note_field_id)
+        split.save()
+    else:
+        print(form.errors)
+
+    return redirect(
+        values.base_id_url.format(
+            reverse(values.shift_menu_view),
+            values.shift_id,
+            split.shift.pk
+        )
+    )
+
+
 def end_delivery(request):
     # todo: add a check that raises an error if an id isnt included in GET
 
@@ -463,12 +468,13 @@ def end_delivery(request):
 
     if request.method == 'POST':
         delivery_id = request.GET.get(values.delivery_id)
-        form = AddDeliveryForm(request.POST)
+        form = forms.AddDeliveryForm(request.POST)
 
         if form.is_valid():
             delivery = Delivery.objects.get(pk=delivery_id)
-            delivery.distance = request.POST.get('distance')
-            delivery.average_speed = request.POST.get('average_speed')
+            delivery.distance = request.POST.get(values.distance_field_id)
+            delivery.average_speed =\
+                request.POST.get(values.average_speed_field_id)
             delivery.end_time = now.time()
             delivery.save()
 
@@ -492,17 +498,21 @@ def end_shift(request):
     now = datetime.now()
 
     if request.method == 'POST':
-        form = ShiftForm(request.POST)
+        form = forms.ShiftForm(request.POST)
 
         if form.is_valid():
             shift = Shift.objects.get(pk=request.GET.get(values.shift_id))
-            shift.start_time = request.POST.get('start_time')
-            shift.distance = request.POST.get('distance')
-            shift.fuel_economy = request.POST.get('fuel_economy')
-            shift.recorded_hours = request.POST.get('recorded_hours')
-            shift.vehicle_compensation = request.POST.get('vehicle_compensation')
-            shift.device_compensation = request.POST.get('device_compensation')
-            shift.extra_tips_claimed = request.POST.get('extra_tips_claimed')
+            shift.start_time = request.POST.get(values.start_time_field_id)
+            shift.distance = request.POST.get(values.distance_field_id)
+            shift.fuel_economy = request.POST.get(values.fuel_economy_field_id)
+            shift.recorded_hours =\
+                request.POST.get(values.recorded_hours_field_id)
+            shift.vehicle_compensation =\
+                request.POST.get(values.vehicle_compensation_field_id)
+            shift.device_compensation =\
+                request.POST.get(values.device_compensation_field_id)
+            shift.extra_tips_claimed =\
+                request.POST.get(values.extra_tips_claimed_field_id)
             shift.end_time = now.time()
             shift.save()
         else:
@@ -513,19 +523,22 @@ def end_shift(request):
 
 def end_split(request):
     # todo: add a check that raises an error if an id isnt included in GET
+    # todo: need to update to get the split pk from GET instead of shift pk
 
     now = datetime.now()
+    split = Split.objects.get(pk=request.GET.get(values.split_id))
 
     if request.method == 'POST':
-        shift = Shift.objects.get(pk=request.GET.get(values.shift_id))
-        form = SplitForm(request.POST)
-
+        form = forms.SplitForm(request.POST)
         if form.is_valid():
-            split = Split.objects.get(shift=shift)
-            split.start_time = request.POST.get('start_time')
-            split.distance = request.POST.get('distance')
+            split.start_time = request.POST.get(values.start_time_field_id)
+            split.distance = request.POST.get(values.distance_field_id)
             split.end_time = now.time()
+            split.note = request.POST.get(values.note_field_id)
             split.save()
+
+            split.shift.daily_split_id += 1
+            split.shift.save()
         else:
             print(form.errors)
         
@@ -533,7 +546,7 @@ def end_split(request):
             values.base_id_url.format(
                 reverse(values.shift_menu_view),
                 values.shift_id,
-                shift.pk
+                split.shift.pk
             )
         )
 
@@ -547,8 +560,8 @@ def start_delivery(request):
 
     delivery = Delivery.objects.create(
         shift=shift,
-        daily_id=shift.daily_delivery_id,
-        start_time=now.time()
+        start_time=now.time(),
+        daily_id=shift.daily_delivery_id
     )
 
     return redirect(
@@ -565,9 +578,8 @@ def start_extra_stop(request):
     # todo: add a check that raises an error if an id isnt included in GET
 
     now = datetime.now()
-    shift_id = request.GET.get(values.shift_id)
-    shift = Shift.objects.get(pk=shift_id)
-    
+    shift = Shift.objects.get(pk=request.GET.get(values.shift_id))
+
     ExtraStop.objects.create(
         shift=shift,
         start_time=now.time()
@@ -577,7 +589,7 @@ def start_extra_stop(request):
         values.base_id_url.format(
             reverse(values.shift_menu_view),
             values.shift_id,
-            shift_id
+            shift.pk
         )
     )
 
@@ -587,7 +599,10 @@ def start_shift(request):
     # todo: add a check that raises an error if an id isnt included in GET
 
     now = datetime.now()
-    shift = Shift.objects.create(date=now.date(), start_time=now.time())
+    shift = Shift.objects.create(
+        date=now.date(),
+        start_time=now.time()
+    )
 
     return redirect(
         values.base_id_url.format(
@@ -604,7 +619,11 @@ def start_split(request):
     now = datetime.now()
     shift = Shift.objects.get(pk=request.GET.get(values.shift_id))
 
-    Split.objects.create(shift=shift, start_time=now.time())
+    Split.objects.create(
+        shift=shift,
+        start_time=now.time(),
+        daily_id=shift.daily_split_id
+    )
 
     return redirect(
         values.base_id_url.format(

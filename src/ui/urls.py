@@ -24,6 +24,11 @@ urlpatterns = [
           view=view.delivery_menu,
           name=values.delivery_menu_view
      ),
+     # edit carry out tip
+     path(route='edit_carry_out_tip/',
+          view=view.edit_carry_out_tip,
+          name=values.edit_carry_out_tip_view
+     ),
      # edit delivery
      path(route='edit_delivery/',
           view=view.edit_delivery,
@@ -38,6 +43,11 @@ urlpatterns = [
      path(route='edit_order/',
           view=view.edit_order,
           name=values.edit_order_view
+     ),
+     # edit split
+     path(route='edit_split/',
+          view=view.edit_split,
+          name=values.edit_split_view
      ),
      # end delivery
      path(route='end_delivery/',

@@ -1,5 +1,7 @@
 
 # todo: add string checking/formating for proper html indentions/formating
+br = '<br>\n'
+
 
 def a(content, href):
     return f'<a href="{ href }">{ content }</a>\n'
@@ -25,7 +27,7 @@ def button(value, type='button', classes='', data_toggle='', data_target='',
     if form != '':
         html += f' form="{ form }"'
 
-    html += f'>{ value }</button>'
+    html += f'>{ value }</button>\n'
 
     return html
 
@@ -157,6 +159,10 @@ def input_tag(input_type, classes='', id='', name='', value='', step='', min='',
     html += '>\n'
 
     return html
+
+
+def italicize(text):
+    return f'<i>{text}</i>\n'
 
 
 def label(content, to, classes=''):
