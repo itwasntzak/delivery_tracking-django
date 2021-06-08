@@ -181,12 +181,7 @@ def receive_completed_shift(request, *args, **kwargs):
                 split = serialized_split.save()
         
 
-        print(f'Shift for date, {shift.date}, has been uploaded.\n')
-        return HttpResponse('')
-    
-
-    else:
-        return HttpResponse('')
+    return HttpResponse('')
 
 
 def receive_carry_out_tips(request, *args, **kwargs):
