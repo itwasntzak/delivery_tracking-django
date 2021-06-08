@@ -206,6 +206,25 @@ def edit_orders_button_modal_group(parent, request):
     return ''
 
 
+def edit_shifts_button_group():
+    button_list = []
+    for shift in Shift.objects.all():
+        button_list.append(buttons.edit_shift(shift))
+    
+    if len(button_list) > 0:
+        button_modal_group = values.button_modal_group_layout.format(
+            header=html.h3('Shifts:'),
+            button_group=layout.button_group(
+                button_list=button_list,
+                label='Edit Shift Buttons'
+            ),
+            modal_group=''
+        )
+        return layout.button_modal_group_row_col(button_modal_group)
+    
+    return '' 
+
+
 def edit_split_button_modal_group(shift, request):
 
     button_list = []

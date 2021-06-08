@@ -11,6 +11,7 @@ class Shift(models.Model):
     device_compensation = models.FloatField(null=True, blank=True)
     extra_tips_claimed = models.FloatField(null=True, blank=True)
     daily_delivery_id = models.IntegerField(default=0)
+    daily_extra_stop_id = models.IntegerField(default=0)
     daily_split_id = models.IntegerField(default=0)
 
     def __str__(self):
@@ -98,6 +99,7 @@ class ExtraStop(models.Model):
     distance = models.FloatField(null=True, blank=True)
     start_time = models.TimeField(null=True, blank=True)
     end_time = models.TimeField(null=True, blank=True)
+    daily_id = models.IntegerField(default=0)
 
 
 class Split(models.Model):

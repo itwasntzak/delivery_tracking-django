@@ -43,6 +43,18 @@ def end_delivery(delivery):
 
 
 # main menu buttons
+def edit_shift(shift):
+    return base_button(
+        value=shift.date,
+        href=values.base_id_url.format(
+            reverse(values.shift_menu_view),
+            values.shift_id,
+            shift.pk
+        ),
+        extra_classes=values.edit_buttons_extra_classes
+    )
+
+
 def shift():
     # todo: add text and url change, incase of returning from split
 
@@ -93,8 +105,9 @@ def add_carry_out_tip():
 def edit_carry_out_tip(tip):
 
     if tip.card != 0 and tip.cash != 0:
-        string = '{}<br>{}'.format(
+        string = '{}{}{}'.format(
             strings.edit_card_tip_button_text.format(tip.card),
+            html.br,
             strings.edit_cash_tip_button_text.format(tip.cash)
         )
     elif tip.card != 0:

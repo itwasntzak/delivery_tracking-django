@@ -8,8 +8,6 @@ import objects.forms as forms
 import py_web_ui.bootstrap as bootstrap
 import resources.values as values
 import ui.elements.buttons as buttons
-import ui.elements.fields as fields
-import ui.elements.forms as html_forms
 import ui.elements.layout as layout
 import ui.elements.composite as composite
 
@@ -67,14 +65,9 @@ def main_menu(request):
         composite.title_text('Welcome!', 'What would you like to do?')
     )
     # buttons
-    body_html.append(layout.three_button_row(
-        # order button 
-        buttons.shift(),
-        # extra stop button
-        buttons.view_shifts(),
-        # end delivery
-        buttons.view_statistics()
-    ))
+    body_html.append(buttons.shift())
+    # edit shifts button group
+    body_html.append(composite.edit_shifts_button_group())
     # container
     context = {
         'body_html': bootstrap.container('\n'.join(body_html), fluid=True)
@@ -237,7 +230,9 @@ def add_extra_stop(request):
                         extra_stop.reason = reason
                         extra_stop.distance = distance
                         extra_stop.save()
-                        print('\n\nsuccess\n\n')
+
+                        shift.daily_extra_stop_id += 1
+                        shift.save()
                     else:
                         print(form.errors)
 
@@ -260,11 +255,15 @@ def add_extra_stop(request):
             if form.is_valid():
                 extra_stop = ExtraStop.objects.create(
                     delivery=delivery,
+                    daily_id=delivery.shift.daily_extra_stop_id,
                     end_time=now.time(),
                     location=location,
                     reason=reason,
                     distance=distance,
                 )
+
+                delivery.shift.daily_extra_stop_id += 1
+                delivery.shift.save()
             else:
                 print(form.errors)
 
@@ -582,6 +581,7 @@ def start_extra_stop(request):
 
     ExtraStop.objects.create(
         shift=shift,
+        daily_id=shift.daily_extra_stop_id,
         start_time=now.time()
     )
 
