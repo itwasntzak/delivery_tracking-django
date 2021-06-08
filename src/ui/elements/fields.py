@@ -54,11 +54,11 @@ def end_time(object=None, value=''):
 
     if object is not None:
         # error will occur if an object is passed in without a end time
-        value = object.end_time
+        value = object.end_time.strftime('%H:%M')
 
     return bootstrap.field(
         label=strings.end_time_field_label,
-        input_type=values.text_field_input_type,
+        input_type=values.time_field_input_type,
         id=values.end_time_field_id,
         value=value,
         required=True
@@ -175,11 +175,11 @@ def start_time(object=None, value=''):
 
     if object is not None:
         # error will occur if an object is passed in without a start time
-        value = object.start_time
+        value = object.start_time.strftime('%H:%M')
 
     return bootstrap.field(
         label=strings.start_time_field_label,
-        input_type=values.text_field_input_type,
+        input_type=values.time_field_input_type,
         id=values.start_time_field_id,
         value=value,
         required=True
