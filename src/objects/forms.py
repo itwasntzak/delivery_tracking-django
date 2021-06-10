@@ -1,4 +1,3 @@
-from django.db.models import fields
 from django.forms import ModelForm
 
 from py_web_ui.bootstrap import modal
