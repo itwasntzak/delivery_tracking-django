@@ -1,6 +1,6 @@
 
 import py_web_ui.bootstrap as bootstrap
-
+import py_web_ui.html as html
 
 def base_button_col(button, breakpoint='lg', size=4, extra_classes=''):
     return bootstrap.col(

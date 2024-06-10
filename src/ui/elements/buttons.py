@@ -3,10 +3,11 @@ from datetime import datetime
 from django.urls import reverse
 from objects.models import Delivery, ExtraStop, Order, Shift, Split, Tip
 
-import py_web_ui.bootstrap as bootstrap
-import py_web_ui.html as html
 import resources.strings as strings
 import resources.values as values
+import py_web_ui.bootstrap as bootstrap
+import py_web_ui.html as html
+import py_web_ui.strings as html_strings
 
 
 def base_button(value, href='', data_toggle='', data_target='', data_dismiss='', form='',
@@ -29,7 +30,7 @@ def add_order():
     # todo: pop up modal with forms related to order info
     return base_button(
         value=strings.add_order.format(html.br),
-        data_toggle=values.modal_data_toggle,
+        data_toggle=html_strings.modal_data_toggle,
         data_target=values.add_order_modal_id.format('#')
     )
 
@@ -37,7 +38,7 @@ def add_order():
 def end_delivery(delivery):
     return base_button(
         value=strings.end_delivery.format(html.br),
-        data_toggle=values.modal_data_toggle,
+        data_toggle=html_strings.modal_data_toggle,
         data_target=values.end_delivery_modal_id.format('#')
     )
 
@@ -97,7 +98,7 @@ def view_statistics():
 def add_carry_out_tip():
     return base_button(
         value=strings.add_carry_out_tip.format(html.br),
-        data_toggle=values.modal_data_toggle,
+        data_toggle=html_strings.modal_data_toggle,
         data_target=values.add_carry_out_tip_modal_id.format('#')
     )
 
@@ -117,7 +118,7 @@ def edit_carry_out_tip(tip):
 
     return base_button(
         value=string,
-        data_toggle=values.modal_data_toggle,
+        data_toggle=html_strings.modal_data_toggle,
         data_target=values.edit_carry_out_tip_modal_id.format(
             symbol='#',
             id=tip.pk
@@ -129,7 +130,7 @@ def edit_carry_out_tip(tip):
 def edit_delivery(delivery):
     return base_button(
         value=strings.delivery_id_number.format(delivery.daily_id + 1),
-        data_toggle=values.modal_data_toggle,
+        data_toggle=html_strings.modal_data_toggle,
         data_target=values.edit_delivery_modal_id.format(
             symbol='#',
             id=delivery.pk
@@ -141,7 +142,7 @@ def edit_delivery(delivery):
 def edit_split(split):
     return base_button(
         value=strings.edit_split_button_value.format(split.daily_id + 1),
-        data_toggle=values.modal_data_toggle,
+        data_toggle=html_strings.modal_data_toggle,
         data_target=values.edit_split_modal_id.format(symbol='#', id=split.pk),
         extra_classes=values.edit_buttons_extra_classes
     )
@@ -150,7 +151,7 @@ def edit_split(split):
 def end_shift():
     return base_button(
         value=strings.end_shift.format(html.br),
-        data_toggle=values.modal_data_toggle,
+        data_toggle=html_strings.modal_data_toggle,
         data_target=values.end_shift_modal_id.format('#')
     )
 
@@ -161,7 +162,7 @@ def split(shift, split=None):
         if split.start_time is not None and split.end_time is None:
             return base_button(
                 value=strings.end_split.format(html.br),
-                data_toggle=values.modal_data_toggle,
+                data_toggle=html_strings.modal_data_toggle,
                 data_target=values.end_split_modal_id.format('#')
             )
 
@@ -203,7 +204,7 @@ def start_delivery(shift):
 def add(form):
     return bootstrap.btn(
         value=strings.add_button_text,
-        type=values.submit_button_type,
+        type=html_strings.submit_button_type,
         extra_classes=values.bootstrap_button_primary,
         form=form
     )
@@ -212,7 +213,7 @@ def add(form):
 def end(form):
     return bootstrap.btn(
         value=strings.end_button_text,
-        type=values.submit_button_type,
+        type=html_strings.submit_button_type,
         extra_classes=values.bootstrap_button_primary,
         form=form
     )
@@ -237,7 +238,7 @@ def edit_extra_stop(extra_stop, request):
 
     return base_button(
         value=value,
-        data_toggle=values.modal_data_toggle,
+        data_toggle=html_strings.modal_data_toggle,
         data_target=values.edit_extra_stop_modal_id.format(
             symbol='#',
             id=extra_stop.pk
@@ -256,7 +257,7 @@ def edit_order(order, request):
 
     return base_button(
         value=value,
-        data_toggle=values.modal_data_toggle,
+        data_toggle=html_strings.modal_data_toggle,
         data_target=values.edit_order_modal_id.format(
             symbol='#',
             id=order.pk
@@ -273,7 +274,7 @@ def extra_stop(parent):
             if extra_stop.end_time is None:
                 return base_button(
                     value=strings.end_extra_stop.format(html.br),
-                    data_toggle=values.modal_data_toggle,
+                    data_toggle=html_strings.modal_data_toggle,
                     data_target=values.add_extra_stop_modal_id.format('#')
                 )
 
@@ -291,7 +292,7 @@ def extra_stop(parent):
     elif isinstance(parent, Delivery):
         return base_button(
             value=strings.add_extra_stop.format(html.br),
-            data_toggle=values.modal_data_toggle,
+            data_toggle=html_strings.modal_data_toggle,
             data_target=values.add_extra_stop_modal_id.format('#')
         )
 
@@ -299,7 +300,7 @@ def extra_stop(parent):
 def save(form):
     return bootstrap.btn(
         value=strings.save_button_text,
-        type=values.submit_button_type,
+        type=html_strings.submit_button_type,
         extra_classes=values.bootstrap_button_primary,
         form=form
     )

@@ -5,12 +5,12 @@ from django.urls import reverse
 from objects.models import Delivery, ExtraStop, Shift, Order, Split, Tip
 import objects.forms as forms
 
-import py_web_ui.bootstrap as bootstrap
 import resources.values as values
 import ui.elements.buttons as buttons
 import ui.elements.layout as layout
 import ui.elements.composite as composite
-
+import py_web_ui.bootstrap as bootstrap
+import py_web_ui.html as html
 
 # menus/ui
 def delivery_menu(request):

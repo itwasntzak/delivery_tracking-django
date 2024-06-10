@@ -1,13 +1,13 @@
 from django.urls import reverse
 from objects.models import Delivery, ExtraStop, Order, Shift, Split, Tip
 
-import py_web_ui.bootstrap as bootstrap
 import resources.strings as strings
 import resources.values as values
 import ui.elements.forms as forms
 import ui.elements.buttons as buttons
 import ui.elements.fields as fields
-
+import py_web_ui.bootstrap as bootstrap
+import py_web_ui.html as html
 
 def add_carry_out_tip(form, add_button):
     return bootstrap.modal(

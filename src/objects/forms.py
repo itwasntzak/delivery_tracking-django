@@ -1,6 +1,5 @@
 from django.forms import ModelForm
 
-from py_web_ui.bootstrap import modal
 from .models import Delivery, ExtraStop, Order, Shift, Split, Tip
 import resources.values as values
 

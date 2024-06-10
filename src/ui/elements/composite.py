@@ -1,13 +1,13 @@
 from objects.models import Delivery, ExtraStop, Order, Shift, Split, Tip
 
-import py_web_ui.bootstrap as bootstrap
-import py_web_ui.html as html
 import resources.values as values
 import ui.elements.buttons as buttons
 import ui.elements.fields as fields
 import ui.elements.forms as forms
 import ui.elements.layout as layout
 import ui.elements.modals as modals
+import py_web_ui.bootstrap as bootstrap
+import py_web_ui.html as html
 
 
 def add_carry_out_tip_button_modal(shift, request):

@@ -1,8 +1,9 @@
-import py_web_ui.bootstrap as bootstrap
-import py_web_ui.html as html
 import resources.strings as strings
 import resources.values as values
-
+import py_web_ui.bootstrap as bootstrap
+import py_web_ui.html as html
+import py_web_ui.html as html
+import py_web_ui.strings as html_strings
 
 def average_speed(object=None, value=''):
     if object is not None:
@@ -58,7 +59,7 @@ def end_time(object=None, value=''):
 
     return bootstrap.field(
         label=strings.end_time_field_label,
-        input_type=values.time_field_input_type,
+        input_type=html_strings.time_field_input_type,
         id=values.end_time_field_id,
         value=value,
         required=True
@@ -101,7 +102,7 @@ def location(extra_stop=None, value=''):
 
     return bootstrap.field(
         label=strings.location_field_lable,
-        input_type=values.text_field_input_type,
+        input_type=html_strings.text_field_input_type,
         id=values.location_field_id,
         value=value,
         required=True
@@ -140,7 +141,7 @@ def reason(extra_stop=None, value=''):
 
     return bootstrap.field(
         label=strings.reason_field_label,
-        input_type=values.text_field_input_type,
+        input_type=html_strings.text_field_input_type,
         id=values.reason_field_id,
         value=value,
         required=True
@@ -164,7 +165,7 @@ def recorded_hours(shift=None, value=''):
 
 def sending_menu(value):
     return html.input_tag(
-        input_type=values.hidden_field_input_type,
+        input_type=html_strings.hidden_field_input_type,
         name=values.sending_menu_field_id,
         value=value
     )
@@ -179,7 +180,7 @@ def start_time(object=None, value=''):
 
     return bootstrap.field(
         label=strings.start_time_field_label,
-        input_type=values.time_field_input_type,
+        input_type=html_strings.time_field_input_type,
         id=values.start_time_field_id,
         value=value,
         required=True

@@ -1,9 +1,9 @@
 from django.middleware.csrf import get_token
 from django.urls import reverse
 
-import py_web_ui.html as html
 import resources.values as values
-
+import py_web_ui.bootstrap as bootstrap
+import py_web_ui.html as html
 
 def base_form(content, action, id, request):
 

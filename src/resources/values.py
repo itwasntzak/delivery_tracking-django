@@ -67,7 +67,6 @@ sending_menu_field_id = 'menu'
 start_time_field_id = 'start_time'
 vehicle_compensation_field_id = 'vehicle_compensation'
 
-
 # view names
 add_carry_out_tip_view = 'add-carry-out-tip'
 add_extra_stop_view = 'add-extra-stop'
