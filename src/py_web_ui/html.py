@@ -7,29 +7,65 @@ def a(content, href):
     return f'<a href="{ href }">{ content }</a>\n'
 
 
-def button(value, type='button', classes='', data_toggle='', data_target='',
-           data_dismiss='', aria_label='', form=''):
+class Button:
+    def __init__(self, value, type='button', classes = None,
+                 aria_label = None, form = None):
+        self.value = value
+        self.type = type
+        self.classes = classes
+        self.aria_label = aria_label
+        self.form = form
 
-    html = '<button'
+    def get_attributes(self) -> list:
+        return [attr for attr in dir(self) if not
+                callable(getattr(self, attr)) and not
+                attr.startswith("__") and
+                eval(f'self.{attr}') is not None]
+    
+    def get_classes(self) -> str:
+        # todo: reread artical on getters, setters, properties
 
-    if type != '':
-        html += f' type="{ type }"'
-    if classes != '':
-        html += f' class="{ classes }"'
-    if data_toggle != '':
-        html += f' data-bs-toggle="{ data_toggle }"'
-    if data_target != '':
-        html += f' data-bs-target="{ data_target }"'
-    if data_dismiss != '':
-        html += f' data-dismiss="{ data_dismiss }"'
-    if aria_label != '':
-        html += f' aria-label="{ aria_label }"'
-    if form != '':
-        html += f' form="{ form }"'
+        if type(self.classes) is not list:
+            raise TypeError('Button.classes needs to be a list')
+        if len(self.classes) < 1:
+            raise ValueError(
+                'Button.classes needs to contain at least one string'
+            )
+        for item in self.classes:
+            if type(item) is not str:
+                raise TypeError(
+                    'Button.classes item must be string of class names\n'
+                    'instance of Button.classes item at index: '
+                    f'{self.classes.index(item)}'
+                )
 
-    html += f'>{ value }</button>\n'
+        classes = ''
+        for html_class in self.classes:
+            classes += html_class
+            if html_class != self.classes[-1]:
+                classes += ' '
+        return classes
 
-    return html
+    def start_html(self, attributes, classes) -> str:
+        # have to add the '>' to the end of the returned string
+
+        html = '<button '
+        for attribute in attributes:
+            if '_' in attribute:
+                attribute.replace('_', '-')
+
+            if attribute == 'classes' and classes != []:
+                html += f'{attribute}="{classes}"'
+                if attribute != attributes[-1]:
+                    html += ' '
+            elif attribute != 'classes' and eval(f'self.{attribute}') != '':
+                html += f'{attribute}="{eval(f"self.{attribute}")}"'
+                if attribute != attributes[-1]:
+                    html += ' '
+        return html
+
+    def full_html(self, start_html) -> str:
+        return f'{ start_html }>{ self.value }</button>'
 
 
 def div(content, classes='', style='', id='', tabindex='', role='',
@@ -54,7 +90,7 @@ def div(content, classes='', style='', id='', tabindex='', role='',
     if aria_hidden != '':
         html += f' aria-hidden="{ aria_hidden }"'
 
-    html += f'>{ content }</div>\n'
+    html + f'>{ content }</div>\n'
 
     return html
 

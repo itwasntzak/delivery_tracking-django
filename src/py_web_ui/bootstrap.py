@@ -3,6 +3,13 @@ import py_web_ui.html as html
 def btn(value, href='', extra_classes='', data_toggle='', data_target='',
         data_dismiss='', form='', type='button'):
 
+#     if data_bs_toggle != '':
+#         html += f' data-bs-toggle="{ data_bs_toggle }"'
+#     if data_bs_target != '':
+#         html += f' data-bs-target="{ data_bs_target }"'
+#     if data_dismiss != '':
+#         html += f' data-dismiss="{ data_dismiss }"'
+
     classes = 'btn'
     if extra_classes != '':
         classes += f' { extra_classes }'
@@ -11,8 +18,8 @@ def btn(value, href='', extra_classes='', data_toggle='', data_target='',
         value=value,
         type=type,
         classes=classes,
-        data_toggle=data_toggle,
-        data_target=data_target,
+        data_bs_toggle=data_toggle,
+        data_bs_target=data_target,
         data_dismiss=data_dismiss,
         form=form
     )
@@ -89,6 +96,8 @@ def modal(id, label, body_content, footer_content, title='', header_content=''):
     #   title becomes pointless
 
     if header_content == '':
+        head_tag = html.h5(title, 'modal-title', 'exampleModalLabel')
+        x_button = html.button('', 'button', 'btn-close')
         defualt_content =\
             f'<h5 class="modal-title" id="exampleModalLabel">{ title }</h5>\n'\
             '<button type="button" class="btn-close"'\
