@@ -16,35 +16,48 @@ class Button:
         self.aria_label = aria_label
         self.form = form
 
+
     def get_attributes(self) -> list:
         return [attr for attr in dir(self) if not
                 callable(getattr(self, attr)) and not
                 attr.startswith("__") and
                 eval(f'self.{attr}') is not None]
-    
-    def get_classes(self) -> str:
-        # todo: reread artical on getters, setters, properties
 
+    def add_class(self, class_name: str):
+        if type(class_name) is not str:
+            raise TypeError(
+                'Button.classes item must be string of class names\n'
+            )
+        if self.classes is None:
+            self.classes = [ class_name ]
+        elif type(self.classes) is list:
+            self.classes.append( class_name )
+        else:
+            raise TypeError('Button.classes must be a list of strings')
+
+    # def add_multipe_classes(self, *class_names: str):
+        # todo: make another method to add multiple classes at once
+        #       https://www.programiz.com/python-programming/args-and-kwargs
+
+    # todo: reread artical on getters, setters, propertiesq
+    def get_classes(self) -> str:
+        # check that classes is a list of at least one item
         if type(self.classes) is not list:
-            raise TypeError('Button.classes needs to be a list')
+            raise TypeError('Button.classes must to be a list of strings')
         if len(self.classes) < 1:
             raise ValueError(
-                'Button.classes needs to contain at least one string'
+                'Button.classes needs to contain at least one class name'
             )
-        for item in self.classes:
-            if type(item) is not str:
-                raise TypeError(
-                    'Button.classes item must be string of class names\n'
-                    'instance of Button.classes item at index: '
-                    f'{self.classes.index(item)}'
-                )
 
+        # make string of class names from classes list
         classes = ''
-        for html_class in self.classes:
-            classes += html_class
-            if html_class != self.classes[-1]:
+        for class_name in self.classes:
+            classes += class_name
+            # add spaces between class names
+            if class_name != self.classes[-1]:
                 classes += ' '
         return classes
+
 
     def start_html(self, attributes, classes) -> str:
         # have to add the '>' to the end of the returned string
@@ -64,8 +77,10 @@ class Button:
                     html += ' '
         return html
 
+
     def full_html(self, start_html) -> str:
         return f'{ start_html }>{ self.value }</button>'
+
 
 
 def div(content, classes='', style='', id='', tabindex='', role='',
