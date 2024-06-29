@@ -4,7 +4,9 @@ import py_web_ui.html as html
 class TestClasses(unittest.TestCase):
     def setUp(self):
         self.test_classes = html.Classes()
-    
+
+    # todo: write a test for the string method
+
     def test_classes_setter_error(self):
         with self.assertRaises( TypeError ):
             self.test_classes.classes = 42

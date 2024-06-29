@@ -9,7 +9,15 @@ def a(content, href):
 
 class Classes:
     def __init__(self):
-        self.class_list = []
+        self._class_list = []
+
+    def __str__(self) -> str:
+        class_names = ''
+        for name in self.class_list:
+            class_names += name
+            if name != self.class_list[-1]:
+                class_names += ' '
+        return class_names
 
     def add_class(self, class_name: str):
         if type(class_name) is not str:
@@ -34,7 +42,7 @@ class Button:
     def __init__(self, value, type='button'):
         self.value = value
         self.type = type
-        self.classes
+        self.classes = Classes()
         self.aria_label
         self.form
 
