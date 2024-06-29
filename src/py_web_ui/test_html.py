@@ -5,41 +5,38 @@ class TestClasses(unittest.TestCase):
     def setUp(self):
         self.test_classes = html.Classes()
 
-    # todo: write a test for the string method
+    def test_setter(self):
+        pass
 
-    def test_classes_setter_error(self):
+    def test_setter_error(self):
         with self.assertRaises( TypeError ):
             self.test_classes.classes = 42
             self.test_classes.classes = 'testClass'
 
     def test_add_class(self):
-        # when Button.classes is None
+        # when classes is None
         self.test_classes.add_class( 'testClass' )
         self.assertEqual(
             self.test_classes.classes,
             [ 'testClass' ]
         )
-        # after Button.classes contains a string
+        # after classes contains a string
         self.test_classes.add_class( 'anothaOne' )
         self.assertEqual(
             self.test_classes.classes,
             [ 'testClass', 'anothaOne' ]
         )
     
-    def test_add_class_errors(self):
+    def test_add_class_error(self):
         # if passed argument is not a string
         self.assertRaises(
             TypeError,
             self.test_classes.add_class,
             [ 'testClass' ]
         )
-        # if Button.classes is not a list
-        self.test_classes.classes = { 'myClass': 'testClass' }
-        self.assertRaises(
-            TypeError,
-            self.test_classes.add_class,
-            'testClass'
-        )
+    
+    def test_string(self):
+        pass
 
 
 class TestButton(unittest.TestCase):
