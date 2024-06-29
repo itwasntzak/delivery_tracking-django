@@ -7,43 +7,54 @@ def a(content, href):
     return f'<a href="{ href }">{ content }</a>\n'
 
 
-class Button:
-    def __init__(self, value, type='button', classes = None,
-                 aria_label = None, form = None):
-        self.value = value
-        self.type = type
-        self.classes = classes
-        self.aria_label = aria_label
-        self.form = form
-
-
-    def get_attributes(self) -> list:
-        return [attr for attr in dir(self) if not
-                callable(getattr(self, attr)) and not
-                attr.startswith("__") and
-                eval(f'self.{attr}') is not None]
+class Classes:
+    def __init__(self):
+        self.class_list = []
 
     def add_class(self, class_name: str):
         if type(class_name) is not str:
             raise TypeError(
-                'Button.classes item must be string of class names\n'
+                f'classes items must be strings, not: {type(class_name)}'
             )
-        if self.classes is None:
-            self.classes = [ class_name ]
-        elif type(self.classes) is list:
-            self.classes.append( class_name )
-        else:
-            raise TypeError('Button.classes must be a list of strings')
+        self.class_list.append( class_name )
 
-    # def add_multipe_classes(self, *class_names: str):
-        # todo: make another method to add multiple classes at once
-        #       https://www.programiz.com/python-programming/args-and-kwargs
+    @property
+    def classes(self):
+        return self.class_list
 
-    # todo: reread artical on getters, setters, propertiesq
-    def get_classes(self) -> str:
-        # check that classes is a list of at least one item
-        if type(self.classes) is not list:
-            raise TypeError('Button.classes must to be a list of strings')
+    @classes.setter
+    def classes(self, class_names: list[str]):
+        if type(class_names) is not list:
+            raise TypeError( 'classes must be a list of strings' )
+        for name in class_names:
+            self.add_class( name )
+
+
+class Button:
+    def __init__(self, value, type='button'):
+        self.value = value
+        self.type = type
+        self.classes
+        self.aria_label
+        self.form
+
+
+    def get_attributes(self) -> list:
+        attributes = []
+        for attribute in dir( self ):
+            not_callable = not callable(getattr( self, attribute ))
+            doesnt_start_with = not attribute.startswith( "__" )
+            not_none = getattr( self, attribute ) is not None
+            if not_callable and doesnt_start_with and not_none:
+                attributes.append( attribute )
+        return attributes
+
+
+    @property
+    def classes(self) -> list:
+    
+    # def classes_str
+        # checks classes had at least one item
         if len(self.classes) < 1:
             raise ValueError(
                 'Button.classes needs to contain at least one class name'
@@ -58,6 +69,10 @@ class Button:
                 classes += ' '
         return classes
 
+    @classes.setter
+    def classes(self, *class_names: list[str]):
+        for class_name in class_names:
+            self.add_class( class_name )
 
     def start_html(self, attributes, classes) -> str:
         # have to add the '>' to the end of the returned string
